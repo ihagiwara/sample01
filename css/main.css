@@ -1,0 +1,33 @@
+@charset "UTF-8";
+ 
+@import url(/sample01/css/sanitize.css);
+@import url(/sample01/css/notosansjapanese.css);
+ 
+.clearfix:after {
+  content: ".";
+  display: block;
+  clear: both;
+  height: 0;
+  visibility: hidden;
+}
+ 
+html {
+  font-size: 62.5%;
+}
+ 
+body {
+  font-family: 'Noto Sans Japanese', serif;
+  font-size: 1.2rem;
+  width: 640px;
+  margin: 0 auto;
+  padding: 0;
+  background-color: #EEEEEE;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+a:link, a:visited, a:hover, a:active {
+  color: #0000ff;
+  text-decoration: none;
+}
+

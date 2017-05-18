@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>島図テスト</title>
+  <meta name="description" content="島図テスト" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="島図テスト" />
+  <meta property="og:image" content="/sample01/img/icon.png" />
+  <meta property="og:url" content="http://example.net/" />
+  <meta property="og:site_name" content="島図テスト" />
+  <meta property="og:description" content="島図テスト" />
+
+  <meta name="robots" content="noindex">
+
+  <link rel="shortcut icon" href="/img/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+
+  <style>
+    #droparea {
+      width: 100%;
+      height: 600px;
+      border: 2px solid #999;
+    }
+    
+    .item,
+    p {
+      cursor: pointer;
+      float: left;
+      margin: 0.3em;
+    }
+    
+    #droparea .item {
+      position: absolute;
+    }
+    
+    p {
+      font-size: 105%;
+      padding: 0.6em 0.4em;
+      background-color: #88b7d5;
+      border: 4px solid #c2e1f5;
+    }
+    
+    [draggable=true] {
+      -khtml-user-drag: element;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="dragarea" draggable="true">
+    <img src="img/waku_base.png" class="waku" />
+    <img src="img/waku_base2.png" class="waku" />
+  </div>
+  <div id="droparea">
+    <!--
+    <img src="img/field.jpeg" class="field" />
+-->
+  </div>
+
+  <!--
+    <div id="base" ondragover="f_dragover(event)" ondrop="f_drop(event)">
+      <img src="img/waku_base.png" id="waku_base" alt="枠" draggable="true" ondragstart="f_dragstart(event)">
+    </div>
+
+    <div id="dropbox" ondragover="f_dragover(event)" ondrop="f_drop(event)">
+    </div>
+    -->
+  <script>
+    window.addEventListener('load', function () {
+      /* ドラッグ側の処理
+      ----------------------------------------------------------------- */
+      // ドラッグ要素を取得する
+      var els = document.querySelectorAll('#dragarea .waku');
+      for (var i = 0; i < els.length; i++) {
+        // 配列ごとにIDを設定
+        els[i].id = 'waku' + i;
+        // dragstartイベントのリスナーを設定
+        els[i].addEventListener('dragstart', function (evt) {
+          //evt.dataTransfer.setData('Text', evt.target.id);
+          evt.dataTransfer.setData("text/uri-list", evt.target.src);	//URLを渡す
+        }, true);
+      }
+      /* ドロップ側の処理
+      ----------------------------------------------------------------- */
+      var droparea = document.getElementById('droparea');
+      // dragoverイベントのリスナーを設定
+      droparea.addEventListener('dragover', function (evt) {
+        evt.preventDefault();
+      }, true);
+
+      // dropイベントのリスナーを設定
+      droparea.addEventListener('drop', function (evt) {
+        var id = evt.dataTransfer.getData('text/uri-list');
+        //        var id = evt.dataTransfer.getData('Text');
+        //        var target = document.getElementById(id);
+        var target = document.createElement("target");
+        target.src = id;
+        // dropイベントが発生したクライアント上のX、Y座標に、ドロップ要素を配置
+//        target.style.left = evt.clientX - 64 + 'px';
+//        target.style.top = evt.clientY - 64 + 'px';
+        droparea.appendChild(target);
+        evt.preventDefault();
+
+      }, true);
+    }, true);
+  </script>
+
+</body>
+
+</html>
