@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ss</title>
+</head>
+<body>
+  <div><button id="b1">save</button></div>
+  <div>load<input id="f1" type="file"></div>
+  <div id="d1"></div>
+  <a id="a1" href="#" download="gamesave.dat" target="_blank"></a>
+  <script>
+  (function() {
+    // セーブデータのダウンロード
+    document.getElementById("b1").addEventListener("click", function() {
+      var data = JSON.stringify({
+        name: "You",
+        role: "Valkyrie",
+        race: "human",
+        alignment: "lawful"
+      });
+      if (window.navigator.msSaveBlob) {
+        // MS製ブラウザ用
+        window.navigator.msSaveBlob(new Blob([data],
+          {type: 'application/json'}), "gamesave.dat");
+      } else {
+        // Chromeとか
+        var a1 = document.getElementById("a1");
+        a1.href = "data:application/json," + encodeURIComponent(data);
+        a1.click();
+      }
+    });
+    // データファイルの読み込み
+    document.getElementById("f1").addEventListener("change", function() {
+      if(!this.files || this.files.length <= 0) return;
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        document.getElementById("d1").textContent = this.result;
+      };
+      reader.readAsText(this.files[0]);
+    })
+  })();
+  </script>
+</body>
+</html>

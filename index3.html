@@ -29,25 +29,25 @@
             height: 600px;
             border: 2px solid #999;
         }
-        
+
         .item,
         p {
             cursor: pointer;
             float: left;
             margin: 0.3em;
         }
-        
+
         #droparea .item {
             position: absolute;
         }
-        
+
         p {
             font-size: 105%;
             padding: 0.6em 0.4em;
             background-color: #88b7d5;
             border: 4px solid #c2e1f5;
         }
-        
+
         [draggable=true] {
             -khtml-user-drag: element;
         }
@@ -55,34 +55,167 @@
 
 
     <script>
-        $(function () {
-            $("#drag1").draggable();
-            $("#drag2").draggable();
-            $("#droparea").droppable({
-/*
-                drop: function (event, ui) {
-                    $(this)
-                        .addClass("ui-state-highlight")
-                        .find("p")
-                        .html("Dropped!");
-                }
-*/
-            });
-        });
+
     </script>
 </head>
 
 <body>
 
     <div id="dragarea" draggable="true">
-        <img src="img/waku_base.png" id="drag1" class="waku" />
-        <img src="img/waku_base2.png" id="drag2" class="waku" />
     </div>
-    <div id="droparea">
-        <!--
+    <form name="fm">
+        <div id="droparea">
+            <!--
+            <img src="img/waku_base.png" id="drag" name="drag" class="waku" />
+-->
+            <!--
     <img src="img/field.jpeg" class="field" />
 -->
-    </div>
+        </div>
+    </form>
+    <input type="button" value="画像生成" onClick="addWaku()" />
+    <input type="button" id="save" value="保存" onClick="save()"/>
+    <input type="button" id="load" value="読み込み" />
+    <!--
+        <a id="save" href="#" download="test.txt" onclick="handleDownload()">ダウンロード</a>
+        -->
+    <input type="hidden" id="incWaku" name="incWaku" VALUE=0 />
+    <input type="text" id="zahyou" name="zahyou" VALUE="" />
+    <script>
+        function save() {
+
+            //        var self = $(this);
+            var qdata = $("form").serialize();
+            var tourl = "save.php";
+
+            //$( "#search_main" ).accordion({
+            //    active: "close"
+            //});
+
+            $.ajax({
+                type: "POST",
+                data: qdata,
+                dataType: "html",
+                success: function (data, textStatus) {
+                    $("#droparea").html(data);
+                },
+                error: function (data, textStatus) {
+                    alert(textStatus);
+                    $("#droparea").html("");
+                },
+                url: tourl
+            });
+        }
+
+        //$("#button").click(function () {
+        function addWaku() {
+
+            /*
+                        //動的にDiv要素を生成する
+                        var newWaku = document.createElement('div');
+                        //            waku.style.position = "absolute";
+            
+                        //10～269の乱数を発生させる
+                        var randLeft = 10 + Math.random() * 260;
+                        var randTop = 10 + Math.random() * 260;
+            
+                        //ボールの初期表示位置
+                        newWaku.style.left = randLeft;
+                        newWaku.style.top = randTop;
+            */
+            //ボールのイメージ画像を読み込む
+            var wakuNum = document.getElementById('incWaku').value;
+            var wakuImg = document.createElement('img');
+            wakuImg.src = "img/waku_base2.png";
+            wakuImg.id = "drag" + wakuNum;
+            wakuImg.name = "drag" + wakuNum;
+            wakuImg.className = "waku";
+            //            wakuImg.style.position = "absolute";
+            
+                        var randLeft = 10 + Math.random() * 260;
+                        var randTop = 10 + Math.random() * 260;
+//                        wakuImg.style.left = "0px";
+//                        wakuImg.style.top = "0px";
+//                        wakuImg.style.left = Math.floor(randLeft) + "px";
+//                        wakuImg.style.top = Math.floor(randTop) + "px";
+//                        wakuImg.x = Math.floor(randLeft);
+//                        wakuImg.y = Math.floor(randTop);
+
+            //ボールの初期表示位置
+
+            //Divにイメージを組み込む
+            droparea.appendChild(wakuImg);
+
+            var wakuX = document.createElement('input');
+            wakuX.type = "hidden";
+            wakuX.value = wakuImg.x;
+            wakuX.id = wakuNum + "X";
+            wakuX.name = "data[" + wakuNum + "][x]";
+            droparea.appendChild(wakuX);
+
+            var wakuY = document.createElement('input');
+            wakuY.type = "hidden";
+            wakuY.value = wakuImg.y;
+            wakuY.id = wakuNum + "Y";
+            wakuY.name = "data[" + wakuNum + "][y]";
+            droparea.appendChild(wakuY);
+
+            //            waku.appendChild(wakuImg);
+            //ゲーム画面にボールレイヤ（Div)を組み込む
+            //            droparea.appendChild(waku);
+            //            $("#drag").draggable();
+            document.getElementById('incWaku').value++;
+
+            document.getElementById('zahyou').value = wakuImg.x + "." + wakuImg.y;
+
+            $(".waku").draggable({
+                drag: function () {
+                    /*
+                    var drag = document.getElementById("drag" + wakuNum);
+                    */
+                    var name = this.name;
+                    var wakuNum = name.slice(4);
+                    document.getElementById(wakuNum + "X").value = this.x;
+                    document.getElementById(wakuNum + "Y").value = this.y;
+                    
+                },
+            });
+        }
+
+        $(function () {
+            //            $('#drag').on('draggable', function () {
+            //            });
+            //                        $("#drag").draggable();
+            $(".waku").draggable({
+                drag: function () {
+                    var name = this.name;
+                    var wakuNum = name.slice(4);
+                    document.getElementById(wakuNum + "X").value = this.x;
+                    document.getElementById(wakuNum + "Y").value = this.y;
+                    /*
+                    var wakuFirst = document.getElementById('drag');
+                    document.getElementById('zahyou').value = wakuFirst.style.left + "." + wakuFirst.style.top;
+                    */
+                },
+
+
+
+
+
+            });
+            $("#droparea").droppable({
+                /*
+                                drop: function (event, ui) {
+                                    $(this)
+                                        .addClass("ui-state-highlight")
+                                        .find("p")
+                                        .html("Dropped!");
+                                }
+                */
+            });
+        });
+    </script>
+
 
 </body>
 
