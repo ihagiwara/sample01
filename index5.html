@@ -1,0 +1,387 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>島図テスト</title>
+    <meta name="description" content="島図テスト" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="島図テスト" />
+    <meta property="og:image" content="/sample01/img/icon.png" />
+    <meta property="og:url" content="http://example.net/" />
+    <meta property="og:site_name" content="島図テスト" />
+    <meta property="og:description" content="島図テスト" />
+
+    <meta name="robots" content="noindex">
+
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+
+    <style>
+        #droparea {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #999;
+        }
+
+        .item,
+        p {
+            cursor: pointer;
+            float: left;
+            margin: 0.3em;
+        }
+
+        .waku {
+            font-size: 105%;
+            padding: 0.6em 0.4em;
+        }
+
+        .pdai {
+            background-color: #ff8080;
+            border: 4px solid #ffb9b9;
+        }
+
+        .sdai {
+            background-color: #88b7d5;
+            border: 4px solid #c2e1f5;
+        }
+
+        .ang0 {
+            transform: rotate(-45deg);
+        }
+
+        .ang1 {
+            transform: rotate(-30deg);
+        }
+
+        .ang2 {
+            transform: rotate(-15deg);
+        }
+
+        .ang3 {
+            transform: rotate(0deg);
+        }
+
+        .ang4 {
+            transform: rotate(15deg);
+        }
+
+        .ang5 {
+            transform: rotate(30deg);
+        }
+
+        .ang6 {
+            transform: rotate(45deg);
+        }
+
+        #droparea .waku {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            padding: 0.5em;
+        }
+
+        .ui-selecting {
+            background-position: 0 -100px;
+            background-color: #000000;
+        }
+
+        .waku.ui-selected {
+            background-position: 0 -200px;
+            background-color: #090;
+        }
+
+        .ui-selectable-helper {
+            position: absolute;
+            z-index: 100;
+            border: 1px dotted black;
+        }
+
+        [draggable=true] {
+            -khtml-user-drag: element;
+        }
+    </style>
+
+    <script>
+
+    </script>
+</head>
+
+<body>
+
+    <div id="dragarea" draggable="true">
+    </div>
+    <form name="fm">
+        <div id="droparea">
+            <input type="hidden" id="incWaku" name="incWaku" VALUE=1 />
+
+
+            <a href="#" id="dragEve0" onclick="selWaku(this.id);">
+                <p id="drag0" class="waku pdai ang3 ui-draggable ui-draggable-handle" style="left: 178px; top: 0px;">0</p>
+            </a>
+            <input type="hidden" value="p" id="0Ps" name="data[0][ps]">
+            <input type="hidden" value="178" id="0X" name="data[0][x]">
+            <input type="hidden" value="0" id="0Y" name="data[0][y]">
+            <input type="hidden" value="0" id="0Dai" name="data[0][dai]">
+            <input type="hidden" value="3" id="0Ang" name="data[0][ang]">
+
+
+            <script>
+                function save() {
+
+                    var qdata = $("form").serialize();
+                    var tourl = "save.php";
+
+                    $.ajax({
+                        type: "POST",
+                        data: qdata,
+                        dataType: "html",
+                        success: function (data, textStatus) {
+                            //                    $("#droparea").html(data);
+                            alert("保存しました。");
+                        },
+                        error: function (data, textStatus) {
+                            alert(textStatus);
+                            //                    $("#droparea").html("");
+                        },
+                        url: tourl
+                    });
+                }
+
+                function load() {
+
+                    var qdata = $("form").serialize();
+                    var tourl = "load5.php";
+
+                    $.ajax({
+                        type: "POST",
+                        data: qdata,
+                        dataType: "html",
+                        success: function (data, textStatus) {
+                            $("#droparea").html(data);
+                        },
+                        error: function (data, textStatus) {
+                            alert(textStatus);
+                            $("#droparea").html("");
+                        },
+                        url: tourl
+                    });
+                }
+
+                function cngDai() {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiMoto = document.getElementById("daiMoto").value;
+                    var daiSaki = document.getElementById("daiSaki").value;
+                    document.getElementById("drag" + daiId).innerHTML = daiSaki;
+                    document.getElementById(daiId + "Dai").value = daiSaki;
+                    alert(daiMoto + "番台を" + daiSaki + "番台に変更しました。");
+                }
+
+                function cngAngle(lr) {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiAng = document.getElementById("angle").value;
+                    var classlist = document.getElementById("drag" + daiId).classList;
+                    document.getElementById("drag" + daiId).classList.remove("ang" + daiAng);
+                    if (lr == 'l' && daiAng > 0) {
+                        daiAng--;
+                    } else if (lr == 'r' && daiAng < 6) {
+                        daiAng++;
+                    }
+                    document.getElementById("drag" + daiId).classList.add("ang" + daiAng);
+                    document.getElementById(daiId + "Ang").value = daiAng;
+                    document.getElementById("angle").value = daiAng;
+                }
+
+                //$(document).on("click", ".waku", selWaku(this.id));
+                function selWaku(name) {
+                    //                    var name = this.id;
+                    var wakuNum = name.slice(7);
+                    document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                    document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                    document.getElementById('daiId').value = wakuNum;
+                }
+
+                function delWaku() {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiMoto = document.getElementById("daiMoto").value;
+                    var parent = document.getElementById("droparea");
+                    var del = document.getElementById("dragEve" + daiId);
+                    var delPs = document.getElementById(daiId + "Ps");
+                    var delX = document.getElementById(daiId + "X");
+                    var delY = document.getElementById(daiId + "Y");
+                    var delDai = document.getElementById(daiId + "Dai");
+                    var delAng = document.getElementById(daiId + "Ang");
+                    parent.removeChild(del);
+                    parent.removeChild(delPs);
+                    parent.removeChild(delX);
+                    parent.removeChild(delY);
+                    parent.removeChild(delDai);
+                    parent.removeChild(delAng);
+
+                    document.getElementById('daiMoto').value = "";
+                    document.getElementById('angle').value = "";
+                    document.getElementById('daiId').value = "";
+                    alert(daiMoto + "番台を削除しました。");
+                }
+
+                function addWaku(ps) {
+
+                    var wakuNum = document.getElementById('incWaku').value;
+                    var wakuImg = document.createElement('p');
+                    wakuImg.id = "drag" + wakuNum;
+                    wakuImg.name = "drag" + wakuNum;
+                    wakuImg.className = "waku " + ps + "dai ang3";
+                    var t = document.createTextNode(wakuNum);
+                    wakuImg.appendChild(t);
+
+                    var randLeft = 10 + Math.random() * 260;
+                    var randTop = 10 + Math.random() * 260;
+                    wakuImg.style.left = Math.floor(randLeft) + "px";
+                    wakuImg.style.top = Math.floor(randTop) + "px";
+
+
+                    var wakuEve = document.createElement('a');
+                    wakuEve.href = "#";
+                    wakuEve.id = "dragEve" + wakuNum;
+                    wakuEve.setAttribute('onclick', "selWaku(this.id);");
+
+                    wakuEve.appendChild(wakuImg);
+
+
+                    droparea.appendChild(wakuEve);
+
+                    var wakuPs = document.createElement('input');
+                    wakuPs.type = "hidden";
+                    wakuPs.value = ps;
+                    wakuPs.id = wakuNum + "Ps";
+                    wakuPs.name = "data[" + wakuNum + "][ps]";
+                    droparea.appendChild(wakuPs);
+
+                    var wakuX = document.createElement('input');
+                    wakuX.type = "hidden";
+                    wakuX.value = parseInt(wakuImg.style.left);
+                    wakuX.id = wakuNum + "X";
+                    wakuX.name = "data[" + wakuNum + "][x]";
+                    droparea.appendChild(wakuX);
+
+                    var wakuY = document.createElement('input');
+                    wakuY.type = "hidden";
+                    wakuY.value = parseInt(wakuImg.style.top);
+                    wakuY.id = wakuNum + "Y";
+                    wakuY.name = "data[" + wakuNum + "][y]";
+                    droparea.appendChild(wakuY);
+
+                    var wakuDai = document.createElement('input');
+                    wakuDai.type = "hidden";
+                    wakuDai.value = wakuImg.innerHTML;
+                    wakuDai.id = wakuNum + "Dai";
+                    wakuDai.name = "data[" + wakuNum + "][dai]";
+                    droparea.appendChild(wakuDai);
+
+                    var wakuAng = document.createElement('input');
+                    wakuAng.type = "hidden";
+                    wakuAng.value = 3;
+                    wakuAng.id = wakuNum + "Ang";
+                    wakuAng.name = "data[" + wakuNum + "][ang]";
+                    droparea.appendChild(wakuAng);
+
+                    document.getElementById('incWaku').value++;
+
+                    document.getElementById('zahyou').value = wakuImg.style.left + "." + wakuImg.style.top;
+
+                    $(".waku").draggable({
+                        start: function (e, ui) {
+                            $(".ui-selected").each(function () {
+                                var apos = {
+                                    top: $(this).position().top - ui.position.top,
+                                    left: $(this).position().left - ui.position.left
+                                };
+                                $(this).data("apos", apos);
+                            });
+                        },
+                        drag: function (e, ui) {
+                            $(".ui-selected").each(function () {
+                                $(this).css({
+                                    top: ui.position.top + $(this).data("apos").top,
+                                    left: ui.position.left + $(this).data("apos").left
+                                });
+                                var name = $(this).id;
+                                var wakuNum = name.slice(4);
+                                document.getElementById(wakuNum + "X").value = parseInt($(this).style.left);
+                                document.getElementById(wakuNum + "Y").value = parseInt($(this).style.top);
+                                document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                                document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                                document.getElementById('daiId').value = wakuNum;
+                            });
+                        },
+                    });
+                }
+
+                $(function () {
+
+                    $(".waku").draggable({
+                        start: function (e, ui) {
+                            $(".ui-selected").each(function () {
+                                var apos = {
+                                    top: $(this).position().top - ui.position.top,
+                                    left: $(this).position().left - ui.position.left
+                                };
+                                $(this).data("apos", apos);
+                            });
+                        },
+                        drag: function (e, ui) {
+                            $(".ui-selected").each(function () {
+                                $(this).css({
+                                    top: ui.position.top + $(this).data("apos").top,
+                                    left: ui.position.left + $(this).data("apos").left
+                                });
+                            });
+                            var name = this.id;
+                            var wakuNum = name.slice(4);
+                            document.getElementById(wakuNum + "X").value = parseInt(this.style.left);
+                            document.getElementById(wakuNum + "Y").value = parseInt(this.style.top);
+                            document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                            document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                            document.getElementById('daiId').value = wakuNum;
+                        },
+                    });
+                    $("#droparea").droppable({
+                    });
+                    $('#droparea').selectable();
+                });
+            </script>
+        </div>
+    </form>
+
+    <input type="button" value="P追加" onClick="addWaku('p')" />
+    <input type="button" value="S追加" onClick="addWaku('s')" />
+    <br>
+
+    <input type="hidden" id="daiId" name="daiId" VALUE="" />
+    <input type="text" id="daiMoto" name="daiMoto" VALUE="" disabled="disabled" /> → <input type="text" id="daiSaki" name="daiSaki"
+        VALUE="" />
+    <input type="button" id="cngDai" value="台番変更" onClick="cngDai()" />
+    <br> ↓→
+    <input type="text" id="angle" name="angle" VALUE="" disabled="disabled" />
+    <input type="button" id="cngAngleL" value="左に傾ける" onClick="cngAngle('l')" />
+    <input type="button" id="cngAngleR" value="右に傾ける" onClick="cngAngle('r')" />
+    <br> ↓→
+    <input type="button" id="delWaku" value="削除" onClick="delWaku()" />
+    <br>
+
+    <input type="button" id="save" value="保存" onClick="save()" />
+    <input type="button" id="load" value="読み込み" onClick="load()" />
+    <br>
+
+    <input type="text" id="zahyou" name="zahyou" VALUE="" />
+
+
+</body>
+
+</html>

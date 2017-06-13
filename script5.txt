@@ -1,0 +1,194 @@
+            <script>
+                function save() {
+
+                    var qdata = $("form").serialize();
+                    var tourl = "save.php";
+
+                    $.ajax({
+                        type: "POST",
+                        data: qdata,
+                        dataType: "html",
+                        success: function (data, textStatus) {
+                            //                    $("#droparea").html(data);
+                            alert("保存しました。");
+                        },
+                        error: function (data, textStatus) {
+                            alert(textStatus);
+                            //                    $("#droparea").html("");
+                        },
+                        url: tourl
+                    });
+                }
+
+                function load() {
+
+                    var qdata = $("form").serialize();
+                    var tourl = "load5.php";
+
+                    $.ajax({
+                        type: "POST",
+                        data: qdata,
+                        dataType: "html",
+                        success: function (data, textStatus) {
+                            $("#droparea").html(data);
+                        },
+                        error: function (data, textStatus) {
+                            alert(textStatus);
+                            $("#droparea").html("");
+                        },
+                        url: tourl
+                    });
+                }
+
+                function cngDai() {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiMoto = document.getElementById("daiMoto").value;
+                    var daiSaki = document.getElementById("daiSaki").value;
+                    document.getElementById("drag" + daiId).innerHTML = daiSaki;
+                    document.getElementById(daiId + "Dai").value = daiSaki;
+                    alert(daiMoto + "番台を" + daiSaki + "番台に変更しました。");
+                }
+
+                function cngAngle(lr) {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiAng = document.getElementById("angle").value;
+                    var classlist = document.getElementById("drag" + daiId).classList;
+                    document.getElementById("drag" + daiId).classList.remove("ang" + daiAng);
+                    if (lr == 'l' && daiAng > 0) {
+                        daiAng--;
+                    } else if (lr == 'r' && daiAng < 6) {
+                        daiAng++;
+                    }
+                    document.getElementById("drag" + daiId).classList.add("ang" + daiAng);
+                    document.getElementById(daiId + "Ang").value = daiAng;
+                    document.getElementById("angle").value = daiAng;
+                }
+
+//$(document).on("click", ".waku", selWaku(this.id));
+                function selWaku(name) {
+//                    var name = this.id;
+                    var wakuNum = name.slice(7);
+                    document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                    document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                    document.getElementById('daiId').value = wakuNum;
+                }
+
+                function delWaku() {
+                    var daiId = document.getElementById("daiId").value;
+                    var daiMoto = document.getElementById("daiMoto").value;
+                    var parent = document.getElementById("droparea");
+                    var del = document.getElementById("dragEve" + daiId);
+                    var delPs = document.getElementById(daiId + "Ps");
+                    var delX = document.getElementById(daiId + "X");
+                    var delY = document.getElementById(daiId + "Y");
+                    var delDai = document.getElementById(daiId + "Dai");
+                    var delAng = document.getElementById(daiId + "Ang");
+                    parent.removeChild(del);
+                    parent.removeChild(delPs);
+                    parent.removeChild(delX);
+                    parent.removeChild(delY);
+                    parent.removeChild(delDai);
+                    parent.removeChild(delAng);
+
+                    document.getElementById('daiMoto').value = "";
+                    document.getElementById('angle').value = "";
+                    document.getElementById('daiId').value = "";
+                    alert(daiMoto + "番台を削除しました。");
+                }
+
+                function addWaku(ps) {
+
+                    var wakuNum = document.getElementById('incWaku').value;
+                    var wakuImg = document.createElement('p');
+                    wakuImg.id = "drag" + wakuNum;
+                    wakuImg.name = "drag" + wakuNum;
+                    wakuImg.className = "waku " + ps + "dai ang3";
+                    var t = document.createTextNode(wakuNum);
+                    wakuImg.appendChild(t);
+
+                    var randLeft = 10 + Math.random() * 260;
+                    var randTop = 10 + Math.random() * 260;
+                    wakuImg.style.left = Math.floor(randLeft) + "px";
+                    wakuImg.style.top = Math.floor(randTop) + "px";
+
+
+                    var wakuEve = document.createElement('a');
+                    wakuEve.href = "#";
+                    wakuEve.id = "dragEve" + wakuNum;
+                    wakuEve.setAttribute('onclick', "selWaku(this.id);");
+                    
+                    wakuEve.appendChild(wakuImg);
+                    
+
+                    droparea.appendChild(wakuEve);
+
+                    var wakuPs = document.createElement('input');
+                    wakuPs.type = "hidden";
+                    wakuPs.value = ps;
+                    wakuPs.id = wakuNum + "Ps";
+                    wakuPs.name = "data[" + wakuNum + "][ps]";
+                    droparea.appendChild(wakuPs);
+
+                    var wakuX = document.createElement('input');
+                    wakuX.type = "hidden";
+                    wakuX.value = parseInt(wakuImg.style.left);
+                    wakuX.id = wakuNum + "X";
+                    wakuX.name = "data[" + wakuNum + "][x]";
+                    droparea.appendChild(wakuX);
+
+                    var wakuY = document.createElement('input');
+                    wakuY.type = "hidden";
+                    wakuY.value = parseInt(wakuImg.style.top);
+                    wakuY.id = wakuNum + "Y";
+                    wakuY.name = "data[" + wakuNum + "][y]";
+                    droparea.appendChild(wakuY);
+
+                    var wakuDai = document.createElement('input');
+                    wakuDai.type = "hidden";
+                    wakuDai.value = wakuImg.innerHTML;
+                    wakuDai.id = wakuNum + "Dai";
+                    wakuDai.name = "data[" + wakuNum + "][dai]";
+                    droparea.appendChild(wakuDai);
+
+                    var wakuAng = document.createElement('input');
+                    wakuAng.type = "hidden";
+                    wakuAng.value = 3;
+                    wakuAng.id = wakuNum + "Ang";
+                    wakuAng.name = "data[" + wakuNum + "][ang]";
+                    droparea.appendChild(wakuAng);
+
+                    document.getElementById('incWaku').value++;
+
+                    document.getElementById('zahyou').value = wakuImg.style.left + "." + wakuImg.style.top;
+
+                    $(".waku").draggable({
+                        drag: function () {
+                            var name = this.id;
+                            var wakuNum = name.slice(4);
+                            document.getElementById(wakuNum + "X").value = parseInt(this.style.left);
+                            document.getElementById(wakuNum + "Y").value = parseInt(this.style.top);
+                            document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                            document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                            document.getElementById('daiId').value = wakuNum;
+                        },
+                    });
+                }
+
+                $(function () {
+
+                    $(".waku").draggable({
+                        drag: function () {
+                            var name = this.id;
+                            var wakuNum = name.slice(4);
+                            document.getElementById(wakuNum + "X").value = parseInt(this.style.left);
+                            document.getElementById(wakuNum + "Y").value = parseInt(this.style.top);
+                            document.getElementById('daiMoto').value = document.getElementById(wakuNum + "Dai").value;
+                            document.getElementById('angle').value = document.getElementById(wakuNum + "Ang").value;
+                            document.getElementById('daiId').value = wakuNum;
+                        },
+                    });
+                    $("#droparea").droppable({
+                    });
+
+                });
+            </script>
